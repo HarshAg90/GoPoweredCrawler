@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+
+	"os"
+
 	"net/http"
 	"regexp"
 
@@ -27,9 +31,52 @@ import (
 // )
 
 var GlobalIndex int = 0
+var DepthLimit int = 20
+var baseUrl = "https://en.wikipedia.org/wiki/The_Time_Machine"
 
 func main() {
-	baseUrl := "https://en.wikipedia.org/wiki/Dog"
+	index := 1
+	for len(os.Args) > index {
+		if os.Args[index] == "help" || os.Args[index] == "--help" {
+			fmt.Println(`Usage: go run main.go [options] [value]
+Options:
+	-h, --help: Show this help message
+	-v, --version: Show the version of the crawler
+	-u, --url: Specify the URL to crawl (default: https://en.wikipedia.org/wiki/The_Time_Machine)
+	-d, --depth: Specify the depth limit for crawling (default: 20)`)
+			return
+		} else if os.Args[index] == "version" || os.Args[index] == "--version" {
+			fmt.Println("Crawler Version 1.0.0")
+		} else if os.Args[index] == "-url" || os.Args[index] == "-u" {
+			if len(os.Args) > index+1 {
+				baseUrl = os.Args[index+1]
+				fmt.Printf("Using provided URL: %s\n", baseUrl)
+			} else {
+				fmt.Println("No URL provided, using default: https://en.wikipedia.org/wiki/The_Time_Machine")
+			}
+			index += 1 // Skip the next argument since it's the URL
+
+		} else if os.Args[index] == "-depth" || os.Args[index] == "-d" {
+			if len(os.Args) > index+1 {
+				DL, err := strconv.Atoi(os.Args[index+1])
+				if err != nil {
+					fmt.Printf("Invalid depth limit: %s, using default: %d\n", os.Args[index+1], DepthLimit)
+					// DL = DepthLimit
+				} else {
+					DepthLimit = DL
+					fmt.Printf("Using provided depth limit: %d\n", DepthLimit)
+					index += 1
+				}
+			} else {
+				fmt.Println("No depth limit provided, using default: 20")
+			}
+		}
+		index++
+	}
+	if len(os.Args) == 1 {
+		fmt.Println("No arguements provided, using default\nurl: https://en.wikipedia.org/wiki/The_Time_Machine, depth limit: 20")
+	}
+
 	LinkCheck := link_check(baseUrl)
 
 	if !LinkCheck {
@@ -122,7 +169,7 @@ func crawl(link string) bool {
 			return false
 		}
 		// argIndex := PIndex + "." + strconv.Itoa(index)
-		if GlobalIndex < 20 {
+		if GlobalIndex < DepthLimit {
 			crawl(linkL) // async?
 		} else {
 			return false
