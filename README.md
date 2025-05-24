@@ -18,7 +18,7 @@ A simple web crawler written in Go.
 ### Installation
 
 ```bash
-git clone https://github.com/yourusername/crawler.git
+git clone https://github.com/HarshAg90/GoPoweredCrawler.git
 cd crawler
 go build
 ```
