@@ -28,6 +28,7 @@ go build
 ```bash
 ./crawler -url https://example.com -depth 2
 ```
+> watch video at [video](https://github.com/HarshAg90/GoPoweredCrawler/blob/main/examples/Crawler%20Program%20VID.mp4).
 
 #### Command-line Flags
 
